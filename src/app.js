@@ -1,4 +1,6 @@
 require("dotenv").config();
+const mongoose = require("mongoose");
+const { passport } = require("./middleware/passport_middleware");
 
 const express = require("express"),
   bodyParser = require("body-parser"),
@@ -9,7 +11,7 @@ const express = require("express"),
   logger = require("./logger");
 
 const isProduction = process.env.NODE_ENV === "production";
-
+const cookieParser = require("cookie-parser");
 const app = express();
 
 // middlewares
@@ -20,10 +22,19 @@ app.use(bodyParser.json());
 if (process.env.NODE_ENV === "development") {
   app.use(errorhandler());
 }
+app.use(cookieParser());
+app.use(passport.initialize());
+
+const isMongooseConnectionProvided = process.env.NODE_ENV === "integration";
+if (!isMongooseConnectionProvided) {
+  mongoose.connect(process.env.MONGODB_URI);
+}
 
 // routes
 const indexRouter = require("./routes/index");
 app.use("/", indexRouter);
+const apiRouter = require("./routes/user_api");
+app.use("/api/user", apiRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
