@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a starter project to build RESTful APIs with Express.
+This is a starter project to build RESTful APIs with Express. Includes JWT and token
 
 ## Getting started
 
